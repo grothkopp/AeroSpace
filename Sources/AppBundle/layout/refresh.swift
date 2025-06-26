@@ -42,6 +42,7 @@ func runRefreshSessionBlocking(
             updateTrayText()
             try await normalizeLayoutReason()
             if shouldLayoutWorkspaces { try await layoutWorkspaces() }
+            saveWorldState()
         }
     }
 }
@@ -76,6 +77,7 @@ func runSession<T>(
             if focusBefore != focusAfter {
                 focusAfter?.nativeFocus() // syncFocusToMacOs
             }
+            saveWorldState()
             runRefreshSession(event, screenIsDefinitelyUnlocked: false)
             return result
         }
