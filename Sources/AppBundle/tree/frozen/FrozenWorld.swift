@@ -1,4 +1,4 @@
-struct FrozenWorld {
+struct FrozenWorld: Codable {
     let workspaces: [FrozenWorkspace]
     let monitors: [FrozenMonitor]
     let windowIds: Set<UInt32>
@@ -8,6 +8,15 @@ struct FrozenWorld {
         self.monitors = monitors
         self.windowIds = workspaces.flatMap { collectAllWindowIds(workspace: $0) }.toSet()
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        workspaces = try container.decode([FrozenWorkspace].self, forKey: .workspaces)
+        monitors = try container.decode([FrozenMonitor].self, forKey: .monitors)
+        windowIds = workspaces.flatMap { collectAllWindowIds(workspace: $0) }.toSet()
+    }
+
+    private enum CodingKeys: String, CodingKey { case workspaces, monitors }
 }
 
 private func collectAllWindowIds(workspace: FrozenWorkspace) -> [UInt32] {
